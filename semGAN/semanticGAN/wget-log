@@ -1,15 +1,0 @@
---2023-08-21 15:14:37--  https://drive.google.com/open?id=1badu11NqxGf6qM3PTTooQDJvQbejgbTv
-Resolving drive.google.com (drive.google.com)... 74.125.138.102, 74.125.138.139, 74.125.138.138, ...
-Connecting to drive.google.com (drive.google.com)|74.125.138.102|:443... connected.
-HTTP request sent, awaiting response... 307 Temporary Redirect
-Location: https://drive.google.com/file/d/1badu11NqxGf6qM3PTTooQDJvQbejgbTv/view?usp=drive_open [following]
---2023-08-21 15:14:37--  https://drive.google.com/file/d/1badu11NqxGf6qM3PTTooQDJvQbejgbTv/view?usp=drive_open
-Reusing existing connection to drive.google.com:443.
-HTTP request sent, awaiting response... 200 OK
-Length: unspecified [text/html]
-Saving to: ‘open?id=1badu11NqxGf6qM3PTTooQDJvQbejgbTv’
-
-           open?id=1b     [<=>                      ]       0  --.-KB/s               open?id=1badu11NqxGf6     [ <=>                     ]  77.77K  --.-KB/s    in 0.1s    
-
-2023-08-21 15:14:39 (540 KB/s) - ‘open?id=1badu11NqxGf6qM3PTTooQDJvQbejgbTv’ saved [79641]
-
