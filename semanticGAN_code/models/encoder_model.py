@@ -24,7 +24,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from models.stylegan2_seg import EqualLinear, ConvLayer, ResBlock
+from .stylegan2_seg import EqualLinear, ConvLayer, ResBlock
 import math
 
 class Bottleneck(nn.Module):

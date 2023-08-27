@@ -24,6 +24,7 @@ import argparse
 import math
 import random
 import os
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
 import sys
 sys.path.append('..')
 
@@ -427,6 +428,7 @@ def train(args, ckpt_dir, img_loader, seg_loader, seg_val_loader, generator, per
         # =================Step 1: train with unlabel data ==============================================
         latent_w = encoder(real_img)
         fake_img, fake_seg = generator([latent_w], input_is_latent=True)
+
 
         # detach fake seg
         fake_seg = fake_seg.detach()

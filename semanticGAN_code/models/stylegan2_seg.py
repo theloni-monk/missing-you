@@ -8,7 +8,8 @@ from torch import nn
 from torch.nn import functional as F
 import torch.nn.utils.spectral_norm as spectral_norm
 import numpy as np
-from models.utils import *
+
+from .utils import *
 import random
 
 class ToSEG(nn.Module):

@@ -24,6 +24,7 @@ import argparse
 import math
 import random
 import os
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:512"
 import sys
 sys.path.append('..')
 
@@ -662,9 +663,9 @@ if __name__ == '__main__':
         discriminator_seg.load_state_dict(ckpt['d_seg'])
         g_ema.load_state_dict(ckpt['g_ema'])
 
-        g_optim.load_state_dict(ckpt['g_optim'])
-        d_img_optim.load_state_dict(ckpt['d_img_optim'])
-        d_seg_optim.load_state_dict(ckpt['d_seg_optim'])
+        # g_optim.load_state_dict(ckpt['g_optim'])
+        # d_img_optim.load_state_dict(ckpt['d_img_optim'])
+        # d_seg_optim.load_state_dict(ckpt['d_seg_optim'])
 
     if args.distributed:
         generator = nn.parallel.DistributedDataParallel(

@@ -9,7 +9,7 @@ import math
 import torch
 from torch import nn
 from torch.nn import functional as F
-from models.op import FusedLeakyReLU, fused_leaky_relu, upfirdn2d
+from .op import FusedLeakyReLU, fused_leaky_relu, upfirdn2d
 
 class Blur(nn.Module):
     def __init__(self, kernel, pad, upsample_factor=1):

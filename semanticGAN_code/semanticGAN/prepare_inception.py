@@ -19,6 +19,8 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
+import sys
+sys.path.append('..')
 
 import numpy as np
 import torch
@@ -27,7 +29,7 @@ from torch.utils.data import DataLoader, ConcatDataset
 
 import argparse
 from utils import inception_utils
-from dataloader import (CelebAMaskDataset)
+from dataloader.dataset import (CelebAMaskDataset)
 import pickle
 
 @torch.no_grad()

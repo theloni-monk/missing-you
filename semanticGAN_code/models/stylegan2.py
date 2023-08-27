@@ -5,6 +5,10 @@
 # https://nvlabs.github.io/stylegan2/license.html
 
 from torch import nn
+
+import sys
+sys.path.append('..')
+
 from models.utils import *
 import numpy as np
 
