@@ -728,6 +728,9 @@ if __name__ == '__main__':
     else:
         encoder = FPNEncoder(input_dim=d_input_dim, n_latent=g_ema.n_latent).to(device)
 
+    encoder.load_state_dict(checkpoint['e'])
+    encoder.eval()
+    
     if args.optimizer == 'adam':
         e_label_optim = optim.Adam(
             encoder.parameters(),

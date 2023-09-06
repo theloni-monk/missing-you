@@ -249,7 +249,7 @@ if __name__ == '__main__':
     os.makedirs(os.path.join(args.outdir, 'mask_rgb'), exist_ok=True)
     os.makedirs(os.path.join(args.outdir, 'target_overlay'), exist_ok=True)
     os.makedirs(os.path.join(args.outdir, 'recon_overlay'), exist_ok=True)
-        
+
     if args.save_steps:
         os.makedirs(os.path.join(args.outdir, 'steps'), exist_ok=True)
 

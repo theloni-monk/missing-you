@@ -24,7 +24,7 @@ import argparse
 import math
 import random
 import os
-os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:512"
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
 import sys
 sys.path.append('..')
 
@@ -109,8 +109,9 @@ def g_path_regularize(fake_img, latents, mean_path_length, decay=0.01):
         fake_img.shape[2] * fake_img.shape[3]
     )
     grad, = autograd.grad(
-        outputs=(fake_img * noise).sum(), inputs=latents, create_graph=True
-    )
+        outputs=(fake_img * noise).sum()+ 0 * latents[0].mean(), inputs=latents, create_graph=True
+    ) #FIXME: figure out how to deal with diffed tensor unused
+    
     path_lengths = torch.sqrt(grad.pow(2).sum(2).mean(1))
 
     path_mean = mean_path_length + decay * (path_lengths.mean() - mean_path_length)
@@ -388,7 +389,7 @@ def train(args, ckpt_dir, img_loader, seg_loader, seg_val_loader, generator, dis
             )
 
             generator.zero_grad()
-            weighted_path_loss = args.path_regularize * args.g_reg_every * path_loss
+            weighted_path_loss = args.path_regularize * args.g_reg_every * path_loss + 0 * fake_img[0].mean()
 
             if args.path_batch_shrink:
                 weighted_path_loss += 0 * fake_img[0, 0, 0, 0]
@@ -396,10 +397,6 @@ def train(args, ckpt_dir, img_loader, seg_loader, seg_val_loader, generator, dis
             weighted_path_loss.backward()
       
             g_optim.step()
-
-            mean_path_length_avg = (
-                reduce_sum(mean_path_length).item() / get_world_size()
-            )
 
         loss_dict['path'] = path_loss
         loss_dict['path_length'] = path_lengths.mean()
@@ -448,39 +445,40 @@ def train(args, ckpt_dir, img_loader, seg_loader, seg_val_loader, generator, dis
             writer.add_scalar('g/seg_feat_loss', g_seg_feat_loss_val, global_step=i)
 
 
-            if i % args.viz_every == 0:
-                with torch.no_grad():
-                    g_ema.eval()
-                    sample_img, sample_seg = g_ema([sample_z])
-                    sample_img = sample_img.detach().cpu()
-                    sample_seg = sample_seg.detach().cpu()
+            # if i % args.viz_every == 0:
+            #     torch.cuda.synchronize()
+            #     with torch.no_grad():
+            #         g_ema.eval()
+            #         sample_img, sample_seg = g_ema([sample_z])
+            #         sample_img = sample_img.detach().cpu()
+            #         sample_seg = sample_seg.detach().cpu()
 
-                    if args.seg_name == 'celeba-mask':
-                        sample_seg = torch.argmax(sample_seg, dim=1)
-                        color_map = seg_val_loader.dataset.color_map
-                        sample_mask = torch.zeros((sample_seg.shape[0], sample_seg.shape[1], sample_seg.shape[2], 3), dtype=torch.float)
-                        for key in color_map:
-                            sample_mask[sample_seg==key] = torch.tensor(color_map[key], dtype=torch.float)
-                        sample_mask = sample_mask.permute(0,3,1,2)
+            #         if args.seg_name == 'celeba-mask':
+            #             sample_seg = torch.argmax(sample_seg, dim=1)
+            #             color_map = seg_val_loader.dataset.color_map
+            #             sample_mask = torch.zeros((sample_seg.shape[0], sample_seg.shape[1], sample_seg.shape[2], 3), dtype=torch.float)
+            #             for key in color_map:
+            #                 sample_mask[sample_seg==key] = torch.tensor(color_map[key], dtype=torch.float)
+            #             sample_mask = sample_mask.permute(0,3,1,2)
                     
-                    else:
-                        raise Exception('No such a dataloader!')
+            #         else:
+            #             raise Exception('No such a dataloader!')
 
-                    os.makedirs(os.path.join(ckpt_dir, 'sample'), exist_ok=True)
-                    utils.save_image(
-                        sample_img,
-                        os.path.join(ckpt_dir, f'sample/img_{str(i).zfill(6)}.png'),
-                        nrow=int(args.n_sample ** 0.5),
-                        normalize=True,
-                        range=(-1, 1),
-                    )
+            #         os.makedirs(os.path.join(ckpt_dir, 'sample'), exist_ok=True)
+            #         utils.save_image(
+            #             sample_img,
+            #             os.path.join(ckpt_dir, f'sample/img_{str(i).zfill(6)}.png'),
+            #             nrow=int(args.n_sample ** 0.5),
+            #             normalize=True,
+            #             range=(-1, 1),
+            #         )
                     
-                    utils.save_image(
-                            sample_mask,
-                            os.path.join(ckpt_dir, f'sample/mask_{str(i).zfill(6)}.png'),
-                            nrow=int(args.n_sample ** 0.5),
-                            normalize=True,
-                    )
+            #         utils.save_image(
+            #                 sample_mask,
+            #                 os.path.join(ckpt_dir, f'sample/mask_{str(i).zfill(6)}.png'),
+            #                 nrow=int(args.n_sample ** 0.5),
+            #                 normalize=True,
+            #         )
 
             
 
@@ -576,6 +574,8 @@ if __name__ == '__main__':
     parser.add_argument('--seg_aug', action='store_true', help='seg augmentation')
 
     parser.add_argument('--checkpoint_dir', type=str, default='./checkpoint/')
+
+    parser.add_argument('--local-rank', type=int, default=0)
 
     args = parser.parse_args()
 
